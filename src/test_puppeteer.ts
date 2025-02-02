@@ -1,4 +1,4 @@
-import { convertMarkdownToPDFWithPuppeteer } from "./services/pdfService.js";
+import { convertMarkdownToPDFWithPuppeteer } from "./services/pdfService.ts";
 import { writeFile } from "fs/promises";
 
 const testMarkdown = `
