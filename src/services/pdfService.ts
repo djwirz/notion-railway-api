@@ -7,10 +7,8 @@ import MarkdownIt from "markdown-it";
 export function convertMarkdownToHTML(markdown: string): string {
     const md = new MarkdownIt({
         html: true,
-        linkify: true,
+        linkify: true, // Auto-detect links (handles GitHub, LinkedIn, mailto, etc.)
     });
-
-    let htmlContent = md.render(markdown);
 
     return `
         <html>
@@ -30,7 +28,7 @@ export function convertMarkdownToHTML(markdown: string): string {
                 hr { border: none; border-top: 1px solid #ccc; margin: 25px 0; }
             </style>
         </head>
-        <body>${htmlContent}</body>
+        <body>${md.render(markdown)}</body>
         </html>
     `;
 }
@@ -43,9 +41,6 @@ export async function convertMarkdownToPDF(markdown: string): Promise<Uint8Array
 
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
-
-    // Ensure Puppeteer does not load about:blank first
-    await page.goto("data:text/html,<html></html>", { waitUntil: "load" });
 
     // Set content & ensure everything loads before rendering
     await page.setContent(htmlContent, { waitUntil: "networkidle0" });
