@@ -7,8 +7,16 @@ import MarkdownIt from "markdown-it";
 export function convertMarkdownToHTML(markdown: string): string {
     const md = new MarkdownIt({
         html: true,
-        linkify: true, // Auto-detect links (handles GitHub, LinkedIn, mailto, etc.)
+        linkify: true, // Auto-detects URLs and converts them to links
     });
+
+    let htmlContent = md.render(markdown);
+
+    // Ensure email is NOT hyperlinked
+    htmlContent = htmlContent.replace(
+        /<a href="mailto:[^"]+">([^<]+)<\/a>/g,
+        "$1"
+    );
 
     return `
         <html>
@@ -21,14 +29,14 @@ export function convertMarkdownToHTML(markdown: string): string {
                 h2 { font-size: 18px; margin-top: 20px; padding-top: 5px; }
                 h3 { font-size: 16px; font-weight: bold; margin-top: 15px; }
                 p { margin-bottom: 10px; }
-                a { color: blue; text-decoration: underline; }
+                a { color: inherit; text-decoration: none; } /* No blue links */
                 strong { font-weight: bold; }
                 ul { padding-left: 20px; margin-bottom: 10px; }
                 li { margin-bottom: 3px; }
                 hr { border: none; border-top: 1px solid #ccc; margin: 25px 0; }
             </style>
         </head>
-        <body>${md.render(markdown)}</body>
+        <body>${htmlContent}</body>
         </html>
     `;
 }
