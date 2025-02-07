@@ -25,7 +25,7 @@ export function convertMarkdownToHTML(markdown: string): string {
             <style>
                 body { font-family: Arial, sans-serif; line-height: 1.4; max-width: 800px; margin: auto; padding: 10px; }
                 h1, h2, h3 { color: #222; }
-                h1 { font-size: 22px; margin-bottom: 5px; }
+                h1 { font-size: 22px; margin-bottom: 5px; text-align: center; }
                 h2 { font-size: 18px; margin-top: 15px; }
                 h3 { font-size: 16px; font-weight: bold; margin-top: 10px; }
                 p { margin-bottom: 5px; }
@@ -34,10 +34,11 @@ export function convertMarkdownToHTML(markdown: string): string {
                 ul { padding-left: 18px; margin-bottom: 5px; }
                 li { margin-bottom: 2px; }
                 hr { border: none; border-top: 1px solid #ccc; margin: 15px 0; }
-                
+
                 /* Compact header */
                 .header { text-align: center; margin-bottom: 10px; }
                 .header-info { font-size: 14px; color: #666; }
+                .summary { font-size: 14px; text-align: center; max-width: 600px; margin: auto; margin-bottom: 10px; }
 
                 /* Two-column skills */
                 .skills-container { display: flex; flex-wrap: wrap; gap: 10px; }
@@ -47,6 +48,9 @@ export function convertMarkdownToHTML(markdown: string): string {
                 .job-header { display: flex; justify-content: space-between; align-items: center; font-weight: bold; }
                 .job-title { font-size: 16px; }
                 .job-date { font-size: 14px; color: #666; }
+
+                /* Skills without bullets */
+                .skills-container div { margin-bottom: 3px; }
             </style>
         </head>
         <body>
@@ -54,6 +58,10 @@ export function convertMarkdownToHTML(markdown: string): string {
                 <h1>Daniel J. Wirz</h1>
                 <p class="header-info">
                     GitHub | LinkedIn | Minneapolis, MN | 715-225-8532 | djwirz@gmail.com
+                </p>
+                <p class="summary">
+                    Software Engineer experienced in healthcare solutions and AI-enabled developer tools.
+                    Building scalable microservices, AI-driven agentic solutions, and enabling ridiculous personal use cases in Notion.
                 </p>
             </div>
             ${htmlContent}
