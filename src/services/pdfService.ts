@@ -26,7 +26,7 @@ export function convertMarkdownToHTML(markdown: string): string {
         <head>
             <meta charset="UTF-8">
             <style>
-                body { font-family: Arial, sans-serif; line-height: 1.4; max-width: 850px; margin: auto; padding: 15px; }
+                body { font-family: Arial, sans-serif; line-height: 1.4; max-width: 850px; margin: auto; padding: 20px; }
                 h1, h2, h3 { color: #222; }
                 h1 { font-size: 22px; margin-bottom: 5px; text-align: center; }
                 h2 { font-size: 18px; margin-top: 15px; }
@@ -38,10 +38,22 @@ export function convertMarkdownToHTML(markdown: string): string {
                 li { margin-bottom: 2px; }
                 hr { border: none; border-top: 1px solid #ccc; margin: 15px 0; }
 
-                /* Compact header */
-                .header { text-align: center; margin-bottom: 10px; }
-                .header-info { font-size: 14px; color: #666; }
-                .summary { font-size: 14px; text-align: center; max-width: 600px; margin: auto; margin-bottom: 10px; }
+                /* Adjusted header spacing */
+                .header { text-align: center; margin-bottom: 5px; }
+                .header-info { font-size: 14px; color: #666; margin-top: 15px; } /* More spacing below summary */
+                .summary { 
+                    font-size: 14px; 
+                    text-align: center; 
+                    max-width: 650px; /* Optimized for two-line fit */
+                    margin: auto; 
+                    margin-top: -5px; /* Closer to name */
+                    margin-bottom: 10px; /* More space before contact info */
+                    line-height: 1.5;
+                }
+
+                /* Remove bullet points from skills */
+                .skills-container ul { list-style: none; padding-left: 0; }
+                .skills-container strong { display: block; margin-top: 5px; }
 
                 /* Two-column skills */
                 .skills-container { display: flex; flex-wrap: wrap; gap: 10px; }
@@ -52,9 +64,6 @@ export function convertMarkdownToHTML(markdown: string): string {
                 .job-title { font-size: 16px; }
                 .job-date { font-size: 14px; color: #666; }
 
-                /* Skills without bullets */
-                .skills-container div { margin-bottom: 3px; }
-
                 /* Project links inline */
                 .project-header { display: flex; justify-content: space-between; align-items: center; font-weight: bold; }
             </style>
@@ -62,14 +71,14 @@ export function convertMarkdownToHTML(markdown: string): string {
         <body>
             <div class="header">
                 <h1>Daniel J. Wirz</h1>
+                <p class="summary">
+                    Software Engineer experienced in healthcare solutions and AI-enabled developer tools. 
+                    Building scalable microservices, AI-driven agentic solutions, and enabling ridiculous personal use cases in Notion.
+                </p>
                 <p class="header-info">
                     <a href="https://github.com/djwirz">GitHub</a> | 
                     <a href="https://linkedin.com/in/djwirz">LinkedIn</a> | 
                     Minneapolis, MN | 715-225-8532 | djwirz@gmail.com
-                </p>
-                <p class="summary">
-                    Software Engineer experienced in healthcare solutions and AI-enabled developer tools.
-                    Building scalable microservices, AI-driven agentic solutions, and enabling ridiculous personal use cases in Notion.
                 </p>
             </div>
             ${htmlContent}
@@ -92,7 +101,7 @@ export async function convertMarkdownToPDF(markdown: string): Promise<Uint8Array
 
     const pdfBuffer = await page.pdf({
         format: "A4",
-        margin: { top: "15px", bottom: "15px", left: "20px", right: "20px" }, // Slightly increased margin
+        margin: { top: "20px", bottom: "20px", left: "25px", right: "25px" }, // Balanced for readability
     });
 
     await browser.close();
