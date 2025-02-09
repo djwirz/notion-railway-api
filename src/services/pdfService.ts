@@ -28,36 +28,36 @@ export function convertMarkdownToHTML(markdown: string): string {
             <style>
                 body { font-family: Arial, sans-serif; line-height: 1.4; max-width: 850px; margin: auto; padding: 20px; }
                 h1, h2, h3 { color: #222; }
-                h1 { font-size: 22px; margin-bottom: 2px; text-align: center; } /* Title and contact info are close */
-                h2 { font-size: 18px; margin-top: 15px; }
-                h3 { font-size: 16px; font-weight: bold; margin-top: 10px; }
+                h1 { font-size: 22px; margin-bottom: 4px; text-align: center; } /* Reduced gap under name */
+                h2 { font-size: 18px; margin-top: 10px; }
+                h3 { font-size: 16px; font-weight: bold; margin-top: 8px; }
                 p { margin-bottom: 5px; }
                 a { color: black; text-decoration: underline; } /* Black underlined links */
                 strong { font-weight: bold; }
                 ul { padding-left: 18px; margin-bottom: 5px; }
                 li { margin-bottom: 2px; }
-                hr { border: none; border-top: 1px solid #ccc; margin: 15px 0; }
+                hr { border: none; border-top: 1px solid #ccc; margin: 12px 0; }
 
                 /* Adjusted header spacing */
-                .header { text-align: center; margin-bottom: 5px; }
+                .header { text-align: center; margin-bottom: 3px; } /* Reduced gap */
                 .header-info { 
                     font-size: 14px; 
                     color: #666; 
                     margin-top: 2px; /* Keeps contact info tight to title */
-                    margin-bottom: 15px; /* Added space before summary */
+                    margin-bottom: 10px; /* Keeps summary close but distinct */
                 }
                 .summary { 
                     font-size: 14px; 
                     text-align: center; 
                     max-width: 650px; /* Optimized for two-line fit */
                     margin: auto; 
-                    margin-top: 5px; /* Provides a gap from contact info */
+                    margin-top: 5px; /* Brings it closer to contact info */
                     line-height: 1.5;
                 }
 
                 /* Remove bullet points from skills */
                 .skills-container ul { list-style: none; padding-left: 0; }
-                .skills-container strong { display: block; margin-top: 5px; }
+                .skills-container strong { display: block; margin-top: 3px; }
 
                 /* Two-column skills */
                 .skills-container { display: flex; flex-wrap: wrap; gap: 10px; }
@@ -65,7 +65,8 @@ export function convertMarkdownToHTML(markdown: string): string {
 
                 /* Experience formatting */
                 .job-header { display: flex; justify-content: space-between; align-items: center; font-weight: bold; }
-                .job-title { font-size: 16px; }
+                .job-title { font-size: 16px; margin-bottom: 2px; } /* Reduced gap under role */
+                .job-company { font-size: 14px; font-weight: normal; margin-bottom: 5px; color: #666; } /* Reduced space below company */
                 .job-date { font-size: 14px; color: #666; }
 
                 /* Project links inline */
@@ -105,7 +106,7 @@ export async function convertMarkdownToPDF(markdown: string): Promise<Uint8Array
 
     const pdfBuffer = await page.pdf({
         format: "A4",
-        margin: { top: "20px", bottom: "20px", left: "25px", right: "25px" }, // Balanced for readability
+        margin: { top: "18px", bottom: "18px", left: "22px", right: "22px" }, // Slightly reduced overall margins
     });
 
     await browser.close();
