@@ -28,7 +28,7 @@ export function convertMarkdownToHTML(markdown: string): string {
             <style>
                 body { font-family: Arial, sans-serif; line-height: 1.4; max-width: 850px; margin: auto; padding: 20px; }
                 h1, h2, h3 { color: #222; }
-                h1 { font-size: 22px; margin-bottom: 4px; text-align: center; }
+                h1 { font-size: 22px; margin-bottom: 2px; text-align: center; }
                 h2 { font-size: 18px; margin-top: 10px; }
                 h3 { font-size: 16px; font-weight: bold; margin-top: 8px; }
                 p { margin-bottom: 5px; }
@@ -38,34 +38,34 @@ export function convertMarkdownToHTML(markdown: string): string {
                 li { margin-bottom: 2px; }
                 hr { border: none; border-top: 1px solid #ccc; margin: 12px 0; }
 
-                .header { text-align: center; margin-bottom: 3px; }
+                .header { text-align: center; margin-bottom: 1px; }
                 .header-info { 
                     font-size: 14px; 
                     color: #666; 
-                    margin-top: 2px;
-                    margin-bottom: 10px;
+                    margin-top: 1px;
+                    margin-bottom: 8px;
                 }
                 .summary { 
                     font-size: 14px; 
                     text-align: center; 
                     max-width: 650px;
                     margin: auto; 
-                    margin-top: 5px; 
+                    margin-top: 3px;
                     line-height: 1.5;
                 }
 
-                .experience-container h3 { margin-bottom: 2px; }
-                .experience-container .job-company { font-size: 14px; margin-bottom: 2px; color: #666; }
-                .experience-container ul { margin-top: 2px; }
+                .experience-container h3 { margin-bottom: 1px; }
+                .experience-container .job-company { font-size: 14px; margin-bottom: 1px; color: #666; }
+                .experience-container ul { margin-top: 1px; }
 
                 .project-header { 
                     display: flex; 
                     justify-content: space-between; 
                     align-items: center; 
                     font-weight: bold; 
-                    margin-bottom: 4px;
+                    margin-bottom: 3px;
                 }
-                .project-header a { font-weight: normal; margin-left: 10px; }
+                .project-header a { font-weight: normal; margin-left: 6px; font-size: 13px; }
             </style>
         </head>
         <body>
@@ -100,7 +100,7 @@ export async function convertMarkdownToPDF(markdown: string): Promise<Uint8Array
 
     const pdfBuffer = await page.pdf({
         format: "A4",
-        margin: { top: "18px", bottom: "18px", left: "22px", right: "22px" },
+        margin: { top: "14px", bottom: "14px", left: "20px", right: "20px" },
     });
 
     await browser.close();
