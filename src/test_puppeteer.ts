@@ -8,7 +8,7 @@ async function runTest() {
 
         console.log("Generating test PDFs...");
         await generateTestPDFs(markdown);
-        console.log("✅ PDFs generated: test_output_margin-padding.pdf, test_output_flexbox.pdf, test_output_whitespace.pdf");
+        console.log("✅ PDFs generated: test_output_table-layout.pdf, test_output_absolute-position.pdf, test_output_grid-layout.pdf");
     } catch (error) {
         console.error("❌ Error generating test PDFs:", error);
     }

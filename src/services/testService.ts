@@ -1,46 +1,49 @@
 import puppeteer from "puppeteer";
 import MarkdownIt from "markdown-it";
-import { writeFile } from "fs/promises"; // ✅ Corrected import
+import { promises as fs } from "fs";
 
-/**
- * Converts Markdown to properly structured HTML for PDF generation using different spacing methods.
- */
-function convertMarkdownToHTML(markdown: string, layoutOption: string): string {
-    const md = new MarkdownIt({
-        html: true,
-        linkify: true, // Auto-detects URLs and converts them to links
+async function generatePDFWithStrategy(markdown: string, layoutOption: string) {
+    const htmlContent = convertMarkdownToHTML(markdown, layoutOption);
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
+    await page.setContent(htmlContent, { waitUntil: "networkidle0" });
+
+    const pdfBuffer = await page.pdf({
+        format: "A4",
+        margin: { top: "18px", bottom: "18px", left: "22px", right: "22px" },
     });
 
+    await browser.close();
+    await fs.writeFile(`test_output_${layoutOption}.pdf`, pdfBuffer);
+}
+
+function convertMarkdownToHTML(markdown: string, layoutOption: string): string {
+    const md = new MarkdownIt({ html: true, linkify: true });
     let htmlContent = md.render(markdown);
 
-    // Ensure email is NOT hyperlinked
-    htmlContent = htmlContent.replace(
-        /<a href="mailto:[^"]+">([^<]+)<\/a>/g,
-        "$1"
-    );
+    htmlContent = htmlContent.replace(/<h1>.*?<\/h1>/, ""); // Remove duplicate header
 
-    // Remove duplicate header by stripping out the first markdown header element
-    htmlContent = htmlContent.replace(/<h1>.*?<\/h1>/, ""); 
-
-    let spacingStyles = "";
-
-    if (layoutOption === "margin-padding") {
-        spacingStyles = `
-            .experience-container h3 { margin-bottom: 2px; } /* Title close to role */
-            .experience-container .job-company { margin-bottom: 2px; } /* Company close to bullets */
-            .experience-container ul { margin-top: 2px; } /* Tighter spacing to bullets */
+    let layoutStyles = "";
+    if (layoutOption === "table-layout") {
+        layoutStyles = `
+            .job-entry { display: table; width: 100%; }
+            .job-title, .job-company, .job-bullets { display: table-row; }
+            .job-company { font-style: italic; }
+            .job-bullets { padding-top: 2px; }
         `;
-    } else if (layoutOption === "flexbox") {
-        spacingStyles = `
-            .experience-container { display: flex; flex-direction: column; gap: 2px; }
-            .experience-container h3 { order: 1; }
-            .experience-container .job-company { order: 2; }
-            .experience-container ul { order: 3; margin-top: 0; padding-top: 0; }
+    } else if (layoutOption === "absolute-position") {
+        layoutStyles = `
+            .job-entry { position: relative; margin-bottom: 6px; }
+            .job-title { position: relative; top: -5px; }
+            .job-company { position: relative; top: -3px; font-style: italic; }
+            .job-bullets { margin-top: -4px; }
         `;
-    } else if (layoutOption === "whitespace") {
-        // Manipulating the HTML structure itself
-        htmlContent = htmlContent.replace(/<\/h3>\s*<p class="job-company">/g, "</h3><br><p class='job-company'>");
-        htmlContent = htmlContent.replace(/<\/p>\s*<ul>/g, "</p><br><ul>");
+    } else if (layoutOption === "grid-layout") {
+        layoutStyles = `
+            .experience-container { display: grid; grid-template-rows: auto auto 1fr; row-gap: 2px; }
+            .job-company { font-style: italic; }
+            .job-bullets { margin-top: 3px; }
+        `;
     }
 
     return `
@@ -50,16 +53,20 @@ function convertMarkdownToHTML(markdown: string, layoutOption: string): string {
             <style>
                 body { font-family: Arial, sans-serif; line-height: 1.4; max-width: 850px; margin: auto; padding: 20px; }
                 h1, h2, h3 { color: #222; }
-                h1 { font-size: 22px; text-align: center; margin-bottom: 4px; } 
-                h2 { font-size: 18px; }
-                h3 { font-size: 16px; font-weight: bold; }
+                h1 { font-size: 22px; margin-bottom: 4px; text-align: center; }
+                h2 { font-size: 18px; margin-top: 10px; }
+                h3 { font-size: 16px; font-weight: bold; margin-top: 8px; }
+                p { margin-bottom: 5px; }
                 a { color: black; text-decoration: underline; }
                 strong { font-weight: bold; }
+                ul { padding-left: 18px; margin-bottom: 5px; }
+                li { margin-bottom: 2px; }
                 hr { border: none; border-top: 1px solid #ccc; margin: 12px 0; }
-                .header { text-align: center; }
-                .experience-container { margin-bottom: 10px; }
-                .project-header { display: flex; justify-content: space-between; align-items: center; font-weight: bold; }
-                ${spacingStyles}
+                
+                .experience-container h3 { margin-bottom: 2px; }
+                .header-info { margin-bottom: 8px; }
+
+                ${layoutStyles} /* Apply selected layout strategy */
             </style>
         </head>
         <body>
@@ -81,24 +88,10 @@ function convertMarkdownToHTML(markdown: string, layoutOption: string): string {
     `;
 }
 
-/**
- * Generates three PDFs with different spacing approaches for testing.
- */
-export async function generateTestPDFs(markdown: string): Promise<void> {
-    const browser = await puppeteer.launch();
-    const page = await browser.newPage();
-
-    for (const layoutOption of ["margin-padding", "flexbox", "whitespace"]) {
-        const htmlContent = convertMarkdownToHTML(markdown, layoutOption);
-        await page.setContent(htmlContent, { waitUntil: "networkidle0" });
-
-        const pdfBuffer = await page.pdf({
-            format: "A4",
-            margin: { top: "18px", bottom: "18px", left: "22px", right: "22px" },
-        });
-
-        await writeFile(`test_output_${layoutOption}.pdf`, pdfBuffer); // ✅ Fixed this line
-    }
-
-    await browser.close();
+export async function generateTestPDFs(markdown: string) {
+    console.log("Generating test PDFs with different spacing methods...");
+    await generatePDFWithStrategy(markdown, "table-layout");
+    await generatePDFWithStrategy(markdown, "absolute-position");
+    await generatePDFWithStrategy(markdown, "grid-layout");
+    console.log("✅ PDFs generated: test_output_table-layout.pdf, test_output_absolute-position.pdf, test_output_grid-layout.pdf");
 }
