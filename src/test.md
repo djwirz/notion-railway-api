@@ -1,11 +1,11 @@
 ## Skills
 
-**Programming:** JavaScript, TypeScript, Python, Java, Go, SQL, Bash  
+**Programming:** JavaScript, TypeScript, Python, SQL, Bash  
 **Frontend:** React, React Native, Expo, Angular, Next.js, Tailwind, WebSockets  
 **Backend:** Node.js, Express, FastAPI, GraphQL, Redis, Postgres, MongoDB, Prisma, Supabase, tRPC, Zod  
 **Infrastructure & DevOps:** AWS, Docker, Terraform, Kubernetes, GitHub Actions, Jenkins, Cloudflare, Consul, Edge Functions (Vercel, Cloudflare Workers)  
-**AI & Data:** Hugging Face (NSFW filtering, embeddings), OpenAI, Anthropic, LangChain, Vector DBs (Weaviate, Pinecone), Elasticsearch, FHIR  
-**Tooling:** Cursor (AI-driven coding), Warp (modern CLI), Notion (workflow automation), Obsidian (PKM), Bun (JS runtime)
+**AI & Data:** Hugging Face, OpenAI, Anthropic, LangChain, Vector DBs (Weaviate, Pinecone), Elasticsearch, FHIR, EHR, Pydantic  
+**Tooling:** Cursor (AI-driven coding), Warp (modern CLI), Notion, Obsidian, Bun (JS runtime)
 
 ---
 

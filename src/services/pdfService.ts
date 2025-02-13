@@ -36,54 +36,55 @@ export function convertMarkdownToHTML(markdown: string): string {
                 h1, h2, h3 { color: #222; }
                 h1 { font-size: 22px; margin-bottom: 1px; text-align: center; }
                 h2 { font-size: 18px; margin-top: 8px; }
-                h3 { font-size: 16px; font-weight: bold; margin-bottom: 0px; } /* No margin to ensure grouping */
+                h3 { 
+                    font-size: 16px; 
+                    font-weight: bold; 
+                    margin-bottom: 0px; 
+                    white-space: nowrap; /* Forces job title and company onto the same line */
+                } 
                 p { margin-bottom: 4px; }
                 a { color: black; text-decoration: underline; }
                 strong { font-weight: bold; }
-                ul { padding-left: 16px; margin-bottom: 4px; }
-                li { margin-bottom: 3px; } /* Bullet points have clear spacing */
-                hr { border: none; border-top: 1px solid #ccc; margin: 10px 0; }
 
-                .header { text-align: center; margin-bottom: 1px; }
-                .header-info { 
-                    font-size: 14px; 
-                    color: #666; 
-                    margin-top: 0px;
-                    margin-bottom: 6px;
+                /* Job Entries: Table Structure to Enforce Alignment */
+                .job-entry {
+                    display: table;
+                    width: 100%;
+                    margin-bottom: 10px;
                 }
-                .summary { 
-                    font-size: 14px; 
-                    text-align: center; 
-                    max-width: 650px;
-                    margin: auto; 
-                    margin-top: 2px;
-                    line-height: 1.4;
+                .job-row {
+                    display: table-row;
                 }
-
-                /* Job Title + Company Grouping */
-                .job-container {
-                    display: flex;
-                    flex-direction: column;
-                    align-items: flex-start;
-                    margin-bottom: 2px; /* Ensures spacing before bullet points */
+                .job-title, .job-company {
+                    display: table-cell;
+                    vertical-align: top;
+                    padding-right: 8px;
                 }
                 .job-title {
                     font-size: 16px;
                     font-weight: bold;
-                    margin-bottom: 0px; /* No space between title and company */
                 }
                 .job-company {
-                    font-size: 14px;
-                    font-weight: 500; /* Slightly bolder for better visibility */
-                    color: #444; /* Darker gray to improve contrast */
-                    margin-bottom: 2px; /* Keeps it tight before bullet points */
+                    font-size: 15px;
+                    font-weight: 600;
+                    color: #333;
+                    white-space: nowrap;
                 }
-                .experience-container ul { 
-                    margin-top: 2px; 
-                    margin-bottom: 10px; /* Adds clear separation between job entries */
+
+                /* Bullet List Adjustments */
+                .job-details {
+                    display: table-cell;
+                    vertical-align: top; /* Forces bullet points to align with the company name */
                 }
-                .experience-container li { 
-                    margin-bottom: 3px; /* Ensures bullet points are evenly spaced */
+                .job-details ul {
+                    padding-left: 16px;
+                    margin-top: 0px;
+                    margin-bottom: 4px;
+                    display: table;
+                }
+                .job-details li {
+                    margin-bottom: 2px;
+                    line-height: 1.1; /* Tighter line height for bullets */
                 }
 
                 /* Projects Section - GitHub links inline */
