@@ -7,8 +7,11 @@ import MarkdownIt from "markdown-it";
 export function convertMarkdownToHTML(markdown: string): string {
     const md = new MarkdownIt({
         html: true,
-        linkify: true, // Auto-detects URLs and converts them to links
+        linkify: true,
     });
+
+    // Unescape asterisks for PDF rendering (prevents Notion errors)
+    markdown = markdown.replace(/\\\*/g, "*");
 
     let htmlContent = md.render(markdown);
 
@@ -18,89 +21,41 @@ export function convertMarkdownToHTML(markdown: string): string {
         "$1"
     );
 
-    // Fully remove any existing header duplication from Markdown conversion
-    htmlContent = htmlContent.replace(/<h1>.*?<\/h1>/, "");
+    // Remove duplicate header by stripping out the first markdown header element
+    htmlContent = htmlContent.replace(/<h1>.*?<\/h1>/, ""); 
 
     return `
         <html>
         <head>
             <meta charset="UTF-8">
             <style>
-                body { 
-                    font-family: Arial, sans-serif; 
-                    line-height: 1.3; 
-                    max-width: 850px; 
-                    margin: auto; 
-                    padding: 20px; 
-                }
+                body { font-family: Arial, sans-serif; line-height: 1.4; max-width: 850px; margin: auto; padding: 20px; }
                 h1, h2, h3 { color: #222; }
-                h1 { font-size: 22px; margin-bottom: 1px; text-align: center; }
-                h2 { font-size: 18px; margin-top: 8px; }
-                h3 { 
-                    font-size: 16px; 
-                    font-weight: bold; 
-                    margin-bottom: 0px; 
-                    white-space: nowrap; /* Forces job title and company onto the same line */
-                } 
-                p { margin-bottom: 4px; }
+                h1 { font-size: 22px; margin-bottom: 2px; text-align: center; }
+                h2 { font-size: 18px; margin-top: 15px; }
+                h3 { font-size: 16px; font-weight: bold; margin-top: 10px; }
+                p { margin-bottom: 5px; }
                 a { color: black; text-decoration: underline; }
                 strong { font-weight: bold; }
+                ul { padding-left: 18px; margin-bottom: 5px; }
+                li { margin-bottom: 2px; }
+                hr { border: none; border-top: 1px solid #ccc; margin: 15px 0; }
 
-                /* Job Entries: Table Structure to Enforce Alignment */
-                .job-entry {
-                    display: table;
-                    width: 100%;
-                    margin-bottom: 10px;
-                }
-                .job-row {
-                    display: table-row;
-                }
-                .job-title, .job-company {
-                    display: table-cell;
-                    vertical-align: top;
-                    padding-right: 8px;
-                }
-                .job-title {
-                    font-size: 16px;
-                    font-weight: bold;
-                }
-                .job-company {
-                    font-size: 15px;
-                    font-weight: 600;
-                    color: #333;
-                    white-space: nowrap;
-                }
+                .header { text-align: center; margin-bottom: 5px; }
+                .header-info { font-size: 14px; color: #666; margin-top: 2px; margin-bottom: 15px; }
+                .summary { font-size: 14px; text-align: center; max-width: 650px; margin: auto; margin-top: 5px; line-height: 1.5; }
 
-                /* Bullet List Adjustments */
-                .job-details {
-                    display: table-cell;
-                    vertical-align: top; /* Forces bullet points to align with the company name */
-                }
-                .job-details ul {
-                    padding-left: 16px;
-                    margin-top: 0px;
-                    margin-bottom: 4px;
-                    display: table;
-                }
-                .job-details li {
-                    margin-bottom: 2px;
-                    line-height: 1.1; /* Tighter line height for bullets */
-                }
+                .skills-container ul { list-style: none; padding-left: 0; }
+                .skills-container strong { display: block; margin-top: 5px; }
 
-                /* Projects Section - GitHub links inline */
-                .project-header { 
-                    display: flex; 
-                    justify-content: space-between; 
-                    align-items: center; 
-                    font-weight: bold; 
-                    margin-bottom: 2px;
-                }
-                .project-header a { 
-                    font-weight: normal; 
-                    margin-left: 6px; 
-                    font-size: 13px; 
-                    text-decoration: none; 
-                }
+                .skills-container { display: flex; flex-wrap: wrap; gap: 10px; }
+                .skill-column { flex: 1; min-width: 300px; }
+
+                .job-header { display: flex; justify-content: space-between; align-items: center; font-weight: bold; }
+                .job-title { font-size: 16px; }
+                .job-date { font-size: 14px; color: #666; }
+
+                .project-header { display: flex; justify-content: space-between; align-items: center; font-weight: bold; }
             </style>
         </head>
         <body>
@@ -116,9 +71,7 @@ export function convertMarkdownToHTML(markdown: string): string {
                     Building scalable microservices, AI-driven agentic solutions, and enabling ridiculous personal use cases in Notion.
                 </p>
             </div>
-            <div class="experience-container">
-                ${htmlContent}
-            </div>
+            ${htmlContent}
         </body>
         </html>
     `;
@@ -133,11 +86,12 @@ export async function convertMarkdownToPDF(markdown: string): Promise<Uint8Array
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
 
+    // Set content & ensure everything loads before rendering
     await page.setContent(htmlContent, { waitUntil: "networkidle0" });
 
     const pdfBuffer = await page.pdf({
         format: "A4",
-        margin: { top: "10px", bottom: "10px", left: "18px", right: "18px" },
+        margin: { top: "20px", bottom: "20px", left: "25px", right: "25px" }, // Balanced for readability
     });
 
     await browser.close();

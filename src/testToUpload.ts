@@ -1,7 +1,7 @@
 import { writeFile } from "fs/promises";
 import dotenv from "dotenv";
 import { convertMarkdownToPDF } from "./services/pdfService.ts";
-import { uploadToCloudflareR2 } from "./services/cloudflareR2Client.ts";
+import { uploadToCloudflareR2 } from "./services/cloudflareR2Client.ts"; // Use the stubbed Cloudflare R2 client
 
 dotenv.config();
 
@@ -49,10 +49,11 @@ async function uploadPDFToNotion(pageId: string, pdfUrl: string) {
         },
         body: JSON.stringify({
             properties: {
-                "PDF Resume": {
+                "PDF": {
+                    type: "files",
                     files: [
                         {
-                            name: "Generated Resume.pdf",
+                            name: "Resume.pdf",
                             type: "external",
                             external: { url: pdfUrl },
                         },
@@ -62,7 +63,9 @@ async function uploadPDFToNotion(pageId: string, pdfUrl: string) {
         }),
     });
 
+    const data = await notionUploadResponse.json();
     if (!notionUploadResponse.ok) {
+        console.error("❌ Notion API Error:", JSON.stringify(data, null, 2));
         throw new Error(`Failed to attach PDF to Notion: ${notionUploadResponse.statusText}`);
     }
 
