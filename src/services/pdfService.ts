@@ -13,6 +13,15 @@ export function convertMarkdownToHTML(markdown: string): string {
     // Unescape asterisks for PDF rendering (prevents Notion errors)
     markdown = markdown.replace(/\\\*/g, "*");
 
+    // **Step 1: Insert `<br>` Before Each Section Title (EXCEPT "Programming")**
+    markdown = markdown.replace(
+        /(Frontend|Backend|Infrastructure & DevOps|AI & Data|Tooling):/g,
+        "<br>**$1:**"
+    ).replace(
+        /Programming:/g,
+        "**Programming:**"
+    );
+
     let htmlContent = md.render(markdown);
 
     // Ensure email is NOT hyperlinked
@@ -20,9 +29,6 @@ export function convertMarkdownToHTML(markdown: string): string {
         /<a href="mailto:[^"]+">([^<]+)<\/a>/g,
         "$1"
     );
-
-    // Remove duplicate header by stripping out the first markdown header element
-    htmlContent = htmlContent.replace(/<h1>.*?<\/h1>/, ""); 
 
     return `
         <html>
@@ -32,30 +38,29 @@ export function convertMarkdownToHTML(markdown: string): string {
                 body { font-family: Arial, sans-serif; line-height: 1.4; max-width: 850px; margin: auto; padding: 20px; }
                 h1, h2, h3 { color: #222; }
                 h1 { font-size: 22px; margin-bottom: 2px; text-align: center; }
-                h2 { font-size: 18px; margin-top: 15px; }
-                h3 { font-size: 16px; font-weight: bold; margin-top: 10px; }
-                p { margin-bottom: 5px; }
+                h2 { font-size: 18px; margin-top: 10px; margin-bottom: 4px; }
+                h3 { font-size: 16px; font-weight: bold; margin-top: 8px; margin-bottom: 4px; }
+                p { margin-bottom: 4px; }
                 a { color: black; text-decoration: underline; }
                 strong { font-weight: bold; }
-                ul { padding-left: 18px; margin-bottom: 5px; }
+                ul { padding-left: 18px; margin-bottom: 4px; }
                 li { margin-bottom: 2px; }
-                hr { border: none; border-top: 1px solid #ccc; margin: 15px 0; }
+                hr { border: none; border-top: 1px solid #ccc; margin: 10px 0; }
 
                 .header { text-align: center; margin-bottom: 5px; }
-                .header-info { font-size: 14px; color: #666; margin-top: 2px; margin-bottom: 15px; }
+                .header-info { font-size: 14px; color: #666; margin-top: 2px; margin-bottom: 10px; }
                 .summary { font-size: 14px; text-align: center; max-width: 650px; margin: auto; margin-top: 5px; line-height: 1.5; }
 
-                .skills-container ul { list-style: none; padding-left: 0; }
-                .skills-container strong { display: block; margin-top: 5px; }
+                /* Reduce Vertical Spacing for Skills Section */
+                .skills-container strong {
+                    display: inline;
+                    margin-right: 5px;
+                }
 
-                .skills-container { display: flex; flex-wrap: wrap; gap: 10px; }
-                .skill-column { flex: 1; min-width: 300px; }
-
-                .job-header { display: flex; justify-content: space-between; align-items: center; font-weight: bold; }
-                .job-title { font-size: 16px; }
-                .job-date { font-size: 14px; color: #666; }
-
-                .project-header { display: flex; justify-content: space-between; align-items: center; font-weight: bold; }
+                .skills-container br {
+                    display: block;
+                    margin-bottom: 4px;
+                }
             </style>
         </head>
         <body>
@@ -91,7 +96,7 @@ export async function convertMarkdownToPDF(markdown: string): Promise<Uint8Array
 
     const pdfBuffer = await page.pdf({
         format: "A4",
-        margin: { top: "20px", bottom: "20px", left: "25px", right: "25px" }, // Balanced for readability
+        margin: { top: "15px", bottom: "15px", left: "20px", right: "20px" },
     });
 
     await browser.close();
