@@ -10,6 +10,9 @@ export function convertMarkdownToHTML(markdown: string): string {
         linkify: true,
     });
 
+    // DEBUG: Log raw Markdown before processing
+    console.log("Raw Markdown Before Processing:\n", markdown);
+
     // Unescape asterisks for PDF rendering (prevents Notion errors)
     markdown = markdown.replace(/\\\*/g, "*");
 
@@ -24,10 +27,29 @@ export function convertMarkdownToHTML(markdown: string): string {
 
     let htmlContent = md.render(markdown);
 
+    // DEBUG: Log the raw HTML output before modifications
+    console.log("HTML Output After Markdown Parsing:\n", htmlContent);
+
     // Ensure email is NOT hyperlinked
     htmlContent = htmlContent.replace(
         /<a href="mailto:[^"]+">([^<]+)<\/a>/g,
         "$1"
+    );
+
+    // **Fix GitHub Links in Projects Section**
+    htmlContent = htmlContent.replace(
+        /(###\s+([^\n]+)\s*\|\s*GitHub)/g,
+        (match, fullText, projectTitle) => {
+            // Create a slug based on project title (assumes repo names follow a pattern)
+            const repoSlug = projectTitle
+                .toLowerCase()
+                .replace(/\s+/g, "-")  // Convert spaces to dashes
+                .replace(/[^a-z0-9-]/g, ""); // Remove non-GitHub-safe characters
+
+            const projectLink = `https://github.com/djwirz/${repoSlug}`;
+
+            return `### ${projectTitle} | <a href="${projectLink}" style="text-decoration: underline;">GitHub</a>`;
+        }
     );
 
     return `
@@ -93,6 +115,9 @@ export async function convertMarkdownToPDF(markdown: string): Promise<Uint8Array
 
     // Set content & ensure everything loads before rendering
     await page.setContent(htmlContent, { waitUntil: "networkidle0" });
+
+    // DEBUG: Log the final HTML before generating the PDF
+    console.log("Final HTML Before PDF Generation:\n", htmlContent);
 
     const pdfBuffer = await page.pdf({
         format: "A4",
