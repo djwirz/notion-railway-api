@@ -2,13 +2,13 @@
   "compilerOptions": {
     "outDir": "dist",
     "rootDir": "src",
-    "module": "ESNext",
     "moduleResolution": "Node",
-    "target": "ES2022",
     "strict": true,
     "noImplicitAny": true,
     "esModuleInterop": true,
     "allowImportingTsExtensions": true,
-    "noEmit": true
+    "noEmit": true,
+    "module": "CommonJS",
+    "target": "ES6",
   }
 }
