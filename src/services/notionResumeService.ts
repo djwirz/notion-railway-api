@@ -1,7 +1,3 @@
-import dotenv from "dotenv";
-
-dotenv.config();
-
 const NOTION_API_KEY = process.env.NOTION_API_KEY;
 const RESUMES_DB_ID = process.env.NOTION_RESUMES_DB_ID;
 const JOB_APPLICATIONS_DB_ID = process.env.NOTION_JOB_APPLICATIONS_DB_ID;
