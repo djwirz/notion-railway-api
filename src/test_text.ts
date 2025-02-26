@@ -1,4 +1,4 @@
-import { convertMarkdownToPDFWithText } from "./services/pdfService.js";
+import { convertMarkdownToPDFWithText } from "./services/pdfService.ts";
 import { writeFile } from "fs/promises";
 
 const testMarkdown = `
