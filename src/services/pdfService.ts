@@ -1,59 +1,46 @@
-import { PDFDocument, StandardFonts, rgb } from "pdf-lib";
 import puppeteer from "puppeteer";
 import MarkdownIt from "markdown-it";
 
 /**
- * Basic Markdown-to-PDF conversion (text only, no formatting).
+ * Converts Markdown to properly structured HTML for PDF generation.
  */
-export async function convertMarkdownToPDFWithText(markdown: string): Promise<Uint8Array> {
-    const pdfDoc = await PDFDocument.create();
-    const page = pdfDoc.addPage([600, 800]);
-    const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
-    const { width, height } = page.getSize();
-    const fontSize = 12;
-    const margin = 50;
-
-    // Remove Markdown formatting (plain text only)
-    const plainText = markdown.replace(/[*#>]/g, "").trim();
-
-    page.drawText(plainText, {
-        x: margin,
-        y: height - margin,
-        size: fontSize,
-        font,
-        color: rgb(0, 0, 0),
-        maxWidth: width - 2 * margin,
-    });
-
-    return await pdfDoc.save();
-}
-
-/**
- * Full Markdown-to-PDF conversion (HTML-to-PDF via Puppeteer).
- */
-export async function convertMarkdownToPDFWithPuppeteer(markdown: string): Promise<Uint8Array> {
-    const md = new MarkdownIt();
+export function convertMarkdownToHTML(markdown: string): string {
+    const md = new MarkdownIt({ html: true });
     const htmlContent = md.render(markdown);
 
-    const browser = await puppeteer.launch();
-    const page = await browser.newPage();
-    await page.setContent(`
+    return `
         <html>
         <head>
             <style>
-                body { font-family: Arial, sans-serif; line-height: 1.5; }
-                h1, h2, h3 { color: #333; }
+                body { font-family: Arial, sans-serif; line-height: 1.6; max-width: 800px; margin: auto; padding: 20px; }
+                h1, h2, h3 { color: #222; }
+                h1 { font-size: 22px; margin-bottom: 8px; }
+                h2 { font-size: 18px; margin-top: 18px; }
+                h3 { font-size: 16px; font-weight: bold; margin-top: 15px; }
+                p { margin-bottom: 10px; }
                 a { color: blue; text-decoration: underline; }
                 strong { font-weight: bold; }
                 ul { padding-left: 20px; }
+                li { margin-bottom: 3px; }
+                hr { border: none; border-top: 1px solid #ccc; margin: 20px 0; }
             </style>
         </head>
         <body>${htmlContent}</body>
         </html>
-    `);
+    `;
+}
 
-    const pdfBuffer = await page.pdf({ format: "A4" });
+/**
+ * Generates a PDF from properly formatted HTML using Puppeteer.
+ */
+export async function convertMarkdownToPDF(markdown: string): Promise<Uint8Array> {
+    const htmlContent = convertMarkdownToHTML(markdown);
+
+    const browser = await puppeteer.launch();
+    const page = await browser.newPage();
+    await page.setContent(htmlContent, { waitUntil: "networkidle0" });
+
+    const pdfBuffer = await page.pdf({ format: "A4", margin: { top: "20px", bottom: "20px" } });
     await browser.close();
-
     return pdfBuffer;
 }
