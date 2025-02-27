@@ -28,7 +28,7 @@ export function convertMarkdownToHTML(markdown: string): string {
             <style>
                 body { font-family: Arial, sans-serif; line-height: 1.4; max-width: 850px; margin: auto; padding: 20px; }
                 h1, h2, h3 { color: #222; }
-                h1 { font-size: 22px; margin-bottom: 5px; text-align: center; }
+                h1 { font-size: 22px; margin-bottom: 2px; text-align: center; } /* Title and contact info are close */
                 h2 { font-size: 18px; margin-top: 15px; }
                 h3 { font-size: 16px; font-weight: bold; margin-top: 10px; }
                 p { margin-bottom: 5px; }
@@ -40,14 +40,18 @@ export function convertMarkdownToHTML(markdown: string): string {
 
                 /* Adjusted header spacing */
                 .header { text-align: center; margin-bottom: 5px; }
-                .header-info { font-size: 14px; color: #666; margin-top: 15px; } /* More spacing below summary */
+                .header-info { 
+                    font-size: 14px; 
+                    color: #666; 
+                    margin-top: 2px; /* Keeps contact info tight to title */
+                    margin-bottom: 15px; /* Added space before summary */
+                }
                 .summary { 
                     font-size: 14px; 
                     text-align: center; 
                     max-width: 650px; /* Optimized for two-line fit */
                     margin: auto; 
-                    margin-top: -5px; /* Closer to name */
-                    margin-bottom: 10px; /* More space before contact info */
+                    margin-top: 5px; /* Provides a gap from contact info */
                     line-height: 1.5;
                 }
 
@@ -71,14 +75,14 @@ export function convertMarkdownToHTML(markdown: string): string {
         <body>
             <div class="header">
                 <h1>Daniel J. Wirz</h1>
-                <p class="summary">
-                    Software Engineer experienced in healthcare solutions and AI-enabled developer tools. 
-                    Building scalable microservices, AI-driven agentic solutions, and enabling ridiculous personal use cases in Notion.
-                </p>
                 <p class="header-info">
                     <a href="https://github.com/djwirz">GitHub</a> | 
                     <a href="https://linkedin.com/in/djwirz">LinkedIn</a> | 
                     Minneapolis, MN | 715-225-8532 | djwirz@gmail.com
+                </p>
+                <p class="summary">
+                    Software Engineer experienced in healthcare solutions and AI-enabled developer tools. 
+                    Building scalable microservices, AI-driven agentic solutions, and enabling ridiculous personal use cases in Notion.
                 </p>
             </div>
             ${htmlContent}
