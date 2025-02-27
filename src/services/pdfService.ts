@@ -18,18 +18,21 @@ export function convertMarkdownToHTML(markdown: string): string {
         "$1"
     );
 
+    // Remove duplicate header by stripping out the first markdown header element
+    htmlContent = htmlContent.replace(/<h1>.*?<\/h1>/, ""); 
+
     return `
         <html>
         <head>
             <meta charset="UTF-8">
             <style>
-                body { font-family: Arial, sans-serif; line-height: 1.4; max-width: 800px; margin: auto; padding: 10px; }
+                body { font-family: Arial, sans-serif; line-height: 1.4; max-width: 850px; margin: auto; padding: 15px; }
                 h1, h2, h3 { color: #222; }
                 h1 { font-size: 22px; margin-bottom: 5px; text-align: center; }
                 h2 { font-size: 18px; margin-top: 15px; }
                 h3 { font-size: 16px; font-weight: bold; margin-top: 10px; }
                 p { margin-bottom: 5px; }
-                a { color: inherit; text-decoration: none; } /* No blue links */
+                a { color: black; text-decoration: underline; } /* Black underlined links */
                 strong { font-weight: bold; }
                 ul { padding-left: 18px; margin-bottom: 5px; }
                 li { margin-bottom: 2px; }
@@ -51,13 +54,18 @@ export function convertMarkdownToHTML(markdown: string): string {
 
                 /* Skills without bullets */
                 .skills-container div { margin-bottom: 3px; }
+
+                /* Project links inline */
+                .project-header { display: flex; justify-content: space-between; align-items: center; font-weight: bold; }
             </style>
         </head>
         <body>
             <div class="header">
                 <h1>Daniel J. Wirz</h1>
                 <p class="header-info">
-                    GitHub | LinkedIn | Minneapolis, MN | 715-225-8532 | djwirz@gmail.com
+                    <a href="https://github.com/djwirz">GitHub</a> | 
+                    <a href="https://linkedin.com/in/djwirz">LinkedIn</a> | 
+                    Minneapolis, MN | 715-225-8532 | djwirz@gmail.com
                 </p>
                 <p class="summary">
                     Software Engineer experienced in healthcare solutions and AI-enabled developer tools.
@@ -84,7 +92,7 @@ export async function convertMarkdownToPDF(markdown: string): Promise<Uint8Array
 
     const pdfBuffer = await page.pdf({
         format: "A4",
-        margin: { top: "10px", bottom: "10px", left: "15px", right: "15px" }, // Smaller margins
+        margin: { top: "15px", bottom: "15px", left: "20px", right: "20px" }, // Slightly increased margin
     });
 
     await browser.close();
