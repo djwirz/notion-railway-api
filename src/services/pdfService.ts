@@ -18,8 +18,8 @@ export function convertMarkdownToHTML(markdown: string): string {
         "$1"
     );
 
-    // Remove duplicate header by stripping out the first markdown header element
-    htmlContent = htmlContent.replace(/<h1>.*?<\/h1>/, ""); 
+    // Fully remove any existing header duplication from Markdown conversion
+    htmlContent = htmlContent.replace(/<h1>.*?<\/h1>/, "");
 
     return `
         <html>
@@ -28,39 +28,36 @@ export function convertMarkdownToHTML(markdown: string): string {
             <style>
                 body { font-family: Arial, sans-serif; line-height: 1.4; max-width: 850px; margin: auto; padding: 20px; }
                 h1, h2, h3 { color: #222; }
-                h1 { font-size: 22px; margin-bottom: 4px; text-align: center; } /* Reduced gap under name */
+                h1 { font-size: 22px; margin-bottom: 4px; text-align: center; }
                 h2 { font-size: 18px; margin-top: 10px; }
                 h3 { font-size: 16px; font-weight: bold; margin-top: 8px; }
                 p { margin-bottom: 5px; }
-                a { color: black; text-decoration: underline; } /* Black underlined links */
+                a { color: black; text-decoration: underline; }
                 strong { font-weight: bold; }
                 ul { padding-left: 18px; margin-bottom: 5px; }
                 li { margin-bottom: 2px; }
                 hr { border: none; border-top: 1px solid #ccc; margin: 12px 0; }
 
-                /* Adjusted header spacing */
-                .header { text-align: center; margin-bottom: 3px; } /* Reduced gap */
+                .header { text-align: center; margin-bottom: 3px; }
                 .header-info { 
                     font-size: 14px; 
                     color: #666; 
-                    margin-top: 2px; /* Keeps contact info tight to title */
-                    margin-bottom: 10px; /* Keeps summary close but distinct */
+                    margin-top: 2px;
+                    margin-bottom: 10px;
                 }
                 .summary { 
                     font-size: 14px; 
                     text-align: center; 
-                    max-width: 650px; /* Optimized for two-line fit */
+                    max-width: 650px;
                     margin: auto; 
-                    margin-top: 5px; /* Brings it closer to contact info */
+                    margin-top: 5px; 
                     line-height: 1.5;
                 }
 
-                /* Experience section spacing fixes */
-                .experience-container h3 { margin-bottom: 2px; } /* Title closer to role */
-                .experience-container .job-company { font-size: 14px; margin-bottom: 2px; color: #666; } /* Reduced space below company */
-                .experience-container ul { margin-top: 2px; } /* Less separation from job title */
+                .experience-container h3 { margin-bottom: 2px; }
+                .experience-container .job-company { font-size: 14px; margin-bottom: 2px; color: #666; }
+                .experience-container ul { margin-top: 2px; }
 
-                /* Projects Section - GitHub links inline */
                 .project-header { 
                     display: flex; 
                     justify-content: space-between; 
@@ -68,7 +65,7 @@ export function convertMarkdownToHTML(markdown: string): string {
                     font-weight: bold; 
                     margin-bottom: 4px;
                 }
-                .project-header a { font-weight: normal; margin-left: 10px; } /* Ensures GitHub link aligns inline */
+                .project-header a { font-weight: normal; margin-left: 10px; }
             </style>
         </head>
         <body>
@@ -99,12 +96,11 @@ export async function convertMarkdownToPDF(markdown: string): Promise<Uint8Array
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
 
-    // Set content & ensure everything loads before rendering
     await page.setContent(htmlContent, { waitUntil: "networkidle0" });
 
     const pdfBuffer = await page.pdf({
         format: "A4",
-        margin: { top: "18px", bottom: "18px", left: "22px", right: "22px" }, // Slightly reduced overall margins
+        margin: { top: "18px", bottom: "18px", left: "22px", right: "22px" },
     });
 
     await browser.close();
