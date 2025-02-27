@@ -55,22 +55,20 @@ export function convertMarkdownToHTML(markdown: string): string {
                     line-height: 1.5;
                 }
 
-                /* Remove bullet points from skills */
-                .skills-container ul { list-style: none; padding-left: 0; }
-                .skills-container strong { display: block; margin-top: 3px; }
+                /* Experience section spacing fixes */
+                .experience-container h3 { margin-bottom: 2px; } /* Title closer to role */
+                .experience-container .job-company { font-size: 14px; margin-bottom: 2px; color: #666; } /* Reduced space below company */
+                .experience-container ul { margin-top: 2px; } /* Less separation from job title */
 
-                /* Two-column skills */
-                .skills-container { display: flex; flex-wrap: wrap; gap: 10px; }
-                .skill-column { flex: 1; min-width: 300px; }
-
-                /* Experience formatting */
-                .job-header { display: flex; justify-content: space-between; align-items: center; font-weight: bold; }
-                .job-title { font-size: 16px; margin-bottom: 2px; } /* Reduced gap under role */
-                .job-company { font-size: 14px; font-weight: normal; margin-bottom: 5px; color: #666; } /* Reduced space below company */
-                .job-date { font-size: 14px; color: #666; }
-
-                /* Project links inline */
-                .project-header { display: flex; justify-content: space-between; align-items: center; font-weight: bold; }
+                /* Projects Section - GitHub links inline */
+                .project-header { 
+                    display: flex; 
+                    justify-content: space-between; 
+                    align-items: center; 
+                    font-weight: bold; 
+                    margin-bottom: 4px;
+                }
+                .project-header a { font-weight: normal; margin-left: 10px; } /* Ensures GitHub link aligns inline */
             </style>
         </head>
         <body>
