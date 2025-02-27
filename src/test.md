@@ -46,12 +46,12 @@
 
 ## Projects
 
-### Notion Workout Automation — [GitHub](https://github.com/djwirz/notion-api)
+**Notion Workout Automation** | [GitHub](https://github.com/djwirz/notion-workout-automation)
 
 - Automates workout tracking in Notion by duplicating exercises from predefined templates.
 - Uses Cloudflare Workers to process requests, log interactions, and prevent API rate limits.
 
-### Cover Letter AI — [GitHub](https://github.com/djwirz/cover-letter-ai)
+**Cover Letter AI** | [GitHub](https://github.com/djwirz/cover-letter-ai)
 
 - AI agent-powered application aide that analyzes job descriptions and resumes.
 - Built with FastAPI, Supabase, OpenAI, and Anthropic, leveraging multiple AI agents for ATS optimization.
