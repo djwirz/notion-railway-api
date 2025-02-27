@@ -1,12 +1,3 @@
-# Daniel J. Wirz
-
-**Software Engineer experienced in healthcare solutions and AI-enabled developer tools.**  
-Building scalable microservices, AI-driven agentic solutions, and enabling ridiculous personal use cases in Notion.  
-[GitHub](https://github.com/djwirz/) | [LinkedIn](https://linkedin.com/in/djwirz)  
-Minneapolis, MN | 715-225-8532 | djwirz@gmail.com
-
----
-
 ## Skills
 
 - **Programming:** JavaScript, TypeScript, Python, Java, Go, SQL, Bash
