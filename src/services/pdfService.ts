@@ -26,16 +26,22 @@ export function convertMarkdownToHTML(markdown: string): string {
         <head>
             <meta charset="UTF-8">
             <style>
-                body { font-family: Arial, sans-serif; line-height: 1.3; max-width: 850px; margin: auto; padding: 20px; }
+                body { 
+                    font-family: Arial, sans-serif; 
+                    line-height: 1.3; 
+                    max-width: 850px; 
+                    margin: auto; 
+                    padding: 20px; 
+                }
                 h1, h2, h3 { color: #222; }
                 h1 { font-size: 22px; margin-bottom: 1px; text-align: center; }
                 h2 { font-size: 18px; margin-top: 8px; }
-                h3 { font-size: 16px; font-weight: bold; margin-top: 6px; }
+                h3 { font-size: 16px; font-weight: bold; margin-bottom: 0px; } /* No margin to ensure grouping */
                 p { margin-bottom: 4px; }
                 a { color: black; text-decoration: underline; }
                 strong { font-weight: bold; }
                 ul { padding-left: 16px; margin-bottom: 4px; }
-                li { margin-bottom: 2px; }
+                li { margin-bottom: 3px; } /* Bullet points have clear spacing */
                 hr { border: none; border-top: 1px solid #ccc; margin: 10px 0; }
 
                 .header { text-align: center; margin-bottom: 1px; }
@@ -54,11 +60,33 @@ export function convertMarkdownToHTML(markdown: string): string {
                     line-height: 1.4;
                 }
 
-                .experience-container h3 { margin-bottom: 0px; }
-                .experience-container .job-company { font-size: 14px; margin-bottom: 0px; color: #666; }
-                .experience-container ul { margin-top: 0px; }
-                .experience-container li { margin-bottom: 1px; }
+                /* Job Title + Company Grouping */
+                .job-container {
+                    display: flex;
+                    flex-direction: column;
+                    align-items: flex-start;
+                    margin-bottom: 2px; /* Ensures spacing before bullet points */
+                }
+                .job-title {
+                    font-size: 16px;
+                    font-weight: bold;
+                    margin-bottom: 0px; /* No space between title and company */
+                }
+                .job-company {
+                    font-size: 14px;
+                    font-weight: 500; /* Slightly bolder for better visibility */
+                    color: #444; /* Darker gray to improve contrast */
+                    margin-bottom: 2px; /* Keeps it tight before bullet points */
+                }
+                .experience-container ul { 
+                    margin-top: 2px; 
+                    margin-bottom: 10px; /* Adds clear separation between job entries */
+                }
+                .experience-container li { 
+                    margin-bottom: 3px; /* Ensures bullet points are evenly spaced */
+                }
 
+                /* Projects Section - GitHub links inline */
                 .project-header { 
                     display: flex; 
                     justify-content: space-between; 
@@ -66,7 +94,12 @@ export function convertMarkdownToHTML(markdown: string): string {
                     font-weight: bold; 
                     margin-bottom: 2px;
                 }
-                .project-header a { font-weight: normal; margin-left: 6px; font-size: 13px; text-decoration: none; }
+                .project-header a { 
+                    font-weight: normal; 
+                    margin-left: 6px; 
+                    font-size: 13px; 
+                    text-decoration: none; 
+                }
             </style>
         </head>
         <body>
@@ -82,7 +115,9 @@ export function convertMarkdownToHTML(markdown: string): string {
                     Building scalable microservices, AI-driven agentic solutions, and enabling ridiculous personal use cases in Notion.
                 </p>
             </div>
-            ${htmlContent}
+            <div class="experience-container">
+                ${htmlContent}
+            </div>
         </body>
         </html>
     `;
