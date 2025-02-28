@@ -10,9 +10,6 @@ export function convertMarkdownToHTML(markdown: string): string {
         linkify: true,
     });
 
-    // DEBUG: Log raw Markdown before processing
-    console.log("Raw Markdown Before Processing:\n", markdown);
-
     // Unescape asterisks for PDF rendering (prevents Notion errors)
     markdown = markdown.replace(/\\\*/g, "*");
 
@@ -27,29 +24,19 @@ export function convertMarkdownToHTML(markdown: string): string {
 
     let htmlContent = md.render(markdown);
 
-    // DEBUG: Log the raw HTML output before modifications
-    console.log("HTML Output After Markdown Parsing:\n", htmlContent);
-
     // Ensure email is NOT hyperlinked
     htmlContent = htmlContent.replace(
         /<a href="mailto:[^"]+">([^<]+)<\/a>/g,
         "$1"
     );
 
-    // **Fix GitHub Links in Projects Section**
+    // **Manually Map Correct GitHub Links for Projects**
     htmlContent = htmlContent.replace(
-        /(###\s+([^\n]+)\s*\|\s*GitHub)/g,
-        (match, fullText, projectTitle) => {
-            // Create a slug based on project title (assumes repo names follow a pattern)
-            const repoSlug = projectTitle
-                .toLowerCase()
-                .replace(/\s+/g, "-")  // Convert spaces to dashes
-                .replace(/[^a-z0-9-]/g, ""); // Remove non-GitHub-safe characters
-
-            const projectLink = `https://github.com/djwirz/${repoSlug}`;
-
-            return `### ${projectTitle} | <a href="${projectLink}" style="text-decoration: underline;">GitHub</a>`;
-        }
+        /(<h3>Notion Workout Automation\s*\|\s*GitHub<\/h3>)/g,
+        `<h3>Notion Workout Automation | <a href="https://github.com/djwirz/notion-workout-automation" style="text-decoration: underline;">GitHub</a></h3>`
+    ).replace(
+        /(<h3>Cover Letter AI\s*\|\s*GitHub<\/h3>)/g,
+        `<h3>Cover Letter AI | <a href="https://github.com/djwirz/cover-letter-ai" style="text-decoration: underline;">GitHub</a></h3>`
     );
 
     return `
@@ -113,15 +100,15 @@ export async function convertMarkdownToPDF(markdown: string): Promise<Uint8Array
     const browser = await puppeteer.launch();
     const page = await browser.newPage();
 
-    // Set content & ensure everything loads before rendering
     await page.setContent(htmlContent, { waitUntil: "networkidle0" });
 
-    // DEBUG: Log the final HTML before generating the PDF
-    console.log("Final HTML Before PDF Generation:\n", htmlContent);
-
+    // Ensure links are interactive in the PDF
     const pdfBuffer = await page.pdf({
         format: "A4",
         margin: { top: "15px", bottom: "15px", left: "20px", right: "20px" },
+        displayHeaderFooter: false,
+        printBackground: true,
+        preferCSSPageSize: true,
     });
 
     await browser.close();
