@@ -1,12 +1,12 @@
 import { writeFile } from "fs/promises";
 import dotenv from "dotenv";
 import { convertMarkdownToPDF } from "./services/pdfService.ts";
-import { uploadToCloudflareR2 } from "./services/cloudflareR2Client.ts"; // Use the stubbed Cloudflare R2 client
+import { uploadToCloudflareR2 } from "./services/cloudflareR2Client.ts";
 
 dotenv.config();
 
 const NOTION_API_KEY = process.env.NOTION_API_KEY;
-const NOTION_TEST_RESUME_ID = process.env.NOTION_TEST_RESUME_ID; // Set a test resume ID
+const NOTION_TEST_RESUME_ID = process.env.NOTION_TEST_RESUME_ID;
 const PDF_OUTPUT_NAME = "resume_test_output.pdf";
 
 /**
@@ -89,10 +89,11 @@ async function runTest() {
         console.log("Generating PDF...");
         const pdfBuffer = await convertMarkdownToPDF(markdown);
 
+        // Save locally for verification
         await writeFile(PDF_OUTPUT_NAME, pdfBuffer);
         console.log(`✅ PDF generated: ${PDF_OUTPUT_NAME}`);
 
-        // Step 3: Stubbed upload to Cloudflare R2
+        // Step 3: Upload to Cloudflare R2
         const uploadedPdfUrl = await uploadToCloudflareR2(Buffer.from(pdfBuffer), PDF_OUTPUT_NAME);
 
         // Step 4: Attach the PDF to Notion
