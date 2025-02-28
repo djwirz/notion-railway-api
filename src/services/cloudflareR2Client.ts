@@ -33,6 +33,9 @@ export async function uploadToCloudflareR2(fileBuffer: Buffer, fileName: string)
             Key: fileName,
             Body: fileBuffer,
             ContentType: "application/pdf",
+            Metadata: {
+              "x-amz-acl": "public-read",
+          }
         };
 
         await s3Client.send(new PutObjectCommand(uploadParams));
