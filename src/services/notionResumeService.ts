@@ -67,7 +67,6 @@ async function createResume(baseResume: any, applicationId: string) {
   const requestBody = {
       parent: { database_id: RESUMES_DB_ID },
       properties: {
-          Name: { title: [{ text: { content: "Resume for Application" } }] },
           "Markdown": { rich_text: markdownChunks },
           "Base Resume": { checkbox: false },
           "Created Date": { date: { start: new Date().toISOString() } },
