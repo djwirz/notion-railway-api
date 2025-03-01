@@ -64,7 +64,7 @@ async function createResume(baseResume: any, applicationId: string) {
             "Markdown": { rich_text: markdownChunks },
             "Base Resume": { checkbox: false },
             "Created Date": { date: { start: new Date().toISOString() } },
-            "Application": { relation: [{ id: applicationId }] }, // ✅ Corrected from "Job Application" to "Application"
+            "Resume": { relation: [{ id: applicationId }] },
         },
     };
 
