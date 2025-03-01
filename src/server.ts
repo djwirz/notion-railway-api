@@ -76,7 +76,6 @@ async function uploadPDFToNotion(resumeId: string, pdfUrl: string) {
 const server = createServer(async (req, res) => {
     const url = new URL(req.url ?? "", `http://${req.headers.host}`);
 
-    // ✅ Generate PDF from Notion Resume
     if (req.method === "GET" && url.pathname === "/generate-pdf") {
         const resumeId = url.searchParams.get("resumeId");
         if (!resumeId) {
@@ -107,7 +106,6 @@ const server = createServer(async (req, res) => {
         return;
     }
 
-    // ✅ New: Create Resume from Job Application ID (Maintains GET + Query Param pattern)
     if (req.method === "GET" && url.pathname === "/create-resume") {
         const applicationId = url.searchParams.get("applicationId");
         if (!applicationId) {
@@ -117,23 +115,14 @@ const server = createServer(async (req, res) => {
         }
 
         try {
-            console.log(`Creating resume for job application ID: ${applicationId}`);
-            const newResume = await createResumeFromApplication(applicationId);
+            const resumeId = await createResumeFromApplication(applicationId);
             res.writeHead(200, { "Content-Type": "application/json" });
-            res.end(JSON.stringify({ resumeId: newResume }));
+            res.end(JSON.stringify({ resumeId }));
         } catch (error) {
-            console.error("❌ Error:", error);
             res.writeHead(500, { "Content-Type": "application/json" });
             res.end(JSON.stringify({ error: (error as Error).message }));
         }
-        return;
     }
-
-    // Handle 404 for all other routes
-    res.writeHead(404, { "Content-Type": "text/plain" });
-    res.end("Not Found");
 });
 
-server.listen(PORT, () => {
-    console.log(`🚀 Server running at http://localhost:${PORT}`);
-});
+server.listen(PORT, () => console.log(`🚀 Server running at http://localhost:${PORT}`));
