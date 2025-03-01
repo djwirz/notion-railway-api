@@ -90,22 +90,29 @@ async function createResume(baseResume: any, applicationId: string) {
  * Links the newly created Resume to the Job Application.
  */
 async function linkResumeToJobApplication(applicationId: string, resumeId: string) {
-    console.log(`🔗 Linking resume ${resumeId} to job application ${applicationId}`);
+  console.log(`🔗 Linking resume ${resumeId} to job application ${applicationId}`);
 
-    const response = await fetch(`https://api.notion.com/v1/pages/${applicationId}`, {
-        method: "PATCH",
-        headers: NOTION_HEADERS,
-        body: JSON.stringify({
-            properties: {
-                Application: { relation: [{ id: resumeId }] }, // ✅ Corrected to "Application"
-            },
-        }),
-    });
+  const payload = {
+      properties: {
+          "%7DpR%3A": { relation: [{ id: resumeId }] }, // ✅ Using property ID instead of "Resume"
+      },
+  };
 
-    if (!response.ok) {
-        throw new Error(`Failed to link resume to job application: ${response.statusText}`);
-    }
+  console.log("🔗 Linking Resume Payload:", JSON.stringify(payload, null, 2));
+
+  const response = await fetch(`https://api.notion.com/v1/pages/${applicationId}`, {
+      method: "PATCH",
+      headers: NOTION_HEADERS,
+      body: JSON.stringify(payload),
+  });
+
+  if (!response.ok) {
+      const errorData = await response.json();
+      console.error("❌ Notion API Error:", JSON.stringify(errorData, null, 2));
+      throw new Error(`Failed to link resume to job application: ${response.statusText}`);
+  }
 }
+
 
 /**
  * Main function: Creates a Resume and links it to the Job Application.
