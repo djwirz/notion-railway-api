@@ -52,40 +52,39 @@ function splitTextIntoChunks(text: string, chunkSize: number = 2000) {
 }
 
 /**
- * Creates a new Resume entry in Notion with chunked Markdown.
+ * Creates a new Resume entry in Notion and links it to the Job Application.
  */
 async function createResume(baseResume: any, applicationId: string) {
-  const markdownContent = baseResume.properties["Markdown"].rich_text.map((t: any) => t.plain_text).join("");
-  const markdownChunks = splitTextIntoChunks(markdownContent);
+    const markdownContent = baseResume.properties["Markdown"].rich_text.map((t: any) => t.plain_text).join("");
+    const markdownChunks = splitTextIntoChunks(markdownContent);
 
-  const requestBody = {
-      parent: { database_id: RESUMES_DB_ID },
-      properties: {
-          "Markdown": { rich_text: markdownChunks },
-          "Base Resume": { checkbox: false },
-          "Created Date": { date: { start: new Date().toISOString() } },
-          "Job Application": { relation: [{ id: applicationId }] }, // 🔗 Link Resume to Job Application
-      },
-  };
+    const requestBody = {
+        parent: { database_id: RESUMES_DB_ID },
+        properties: {
+            "Markdown": { rich_text: markdownChunks },
+            "Base Resume": { checkbox: false },
+            "Created Date": { date: { start: new Date().toISOString() } },
+            "Application": { relation: [{ id: applicationId }] }, // ✅ Corrected from "Job Application" to "Application"
+        },
+    };
 
-  console.log("🔍 Creating Notion Resume with chunked payload:", JSON.stringify(requestBody, null, 2));
+    console.log("🔍 Creating Notion Resume with chunked payload:", JSON.stringify(requestBody, null, 2));
 
-  const response = await fetch(`https://api.notion.com/v1/pages`, {
-      method: "POST",
-      headers: NOTION_HEADERS,
-      body: JSON.stringify(requestBody),
-  });
+    const response = await fetch(`https://api.notion.com/v1/pages`, {
+        method: "POST",
+        headers: NOTION_HEADERS,
+        body: JSON.stringify(requestBody),
+    });
 
-  const data = await response.json();
+    const data = await response.json();
 
-  if (!response.ok) {
-      console.error("❌ Notion API Error:", JSON.stringify(data, null, 2));
-      throw new Error(`Failed to create new resume: ${response.statusText}`);
-  }
+    if (!response.ok) {
+        console.error("❌ Notion API Error:", JSON.stringify(data, null, 2));
+        throw new Error(`Failed to create new resume: ${response.statusText}`);
+    }
 
-  return data;
+    return data;
 }
-
 
 /**
  * Links the newly created Resume to the Job Application.
@@ -98,7 +97,7 @@ async function linkResumeToJobApplication(applicationId: string, resumeId: strin
         headers: NOTION_HEADERS,
         body: JSON.stringify({
             properties: {
-                Resume: { relation: [{ id: resumeId }] },
+                Application: { relation: [{ id: resumeId }] }, // ✅ Corrected to "Application"
             },
         }),
     });
