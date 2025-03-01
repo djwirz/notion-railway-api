@@ -76,8 +76,8 @@ async function uploadPDFToNotion(resumeId: string, pdfUrl: string) {
 const server = createServer(async (req, res) => {
     const url = new URL(req.url ?? "", `http://${req.headers.host}`);
 
+    // ✅ Generate PDF from Notion Resume
     if (req.method === "GET" && url.pathname === "/generate-pdf") {
-        // Get `resumeId` from query params
         const resumeId = url.searchParams.get("resumeId");
         if (!resumeId) {
             res.writeHead(400, { "Content-Type": "application/json" });
@@ -87,13 +87,11 @@ const server = createServer(async (req, res) => {
 
         try {
             console.log(`Processing PDF generation for resume ID: ${resumeId}`);
-
             const markdown = await fetchMarkdownFromNotion(resumeId);
             if (!markdown) throw new Error("No Markdown content found.");
 
             console.log("Generating PDF...");
             const pdfBuffer = await convertMarkdownToPDF(markdown);
-
             const fileName = `resume_${resumeId}.pdf`;
             const publicPdfUrl = await uploadToCloudflareR2(Buffer.from(pdfBuffer), fileName);
 
@@ -109,38 +107,29 @@ const server = createServer(async (req, res) => {
         return;
     }
 
-    // ✅ New Endpoint: Create a Resume from a Job Application ID
-    if (req.method === "POST" && url.pathname === "/create-resume") {
-        let body = "";
+    // ✅ New: Create Resume from Job Application ID (Maintains GET + Query Param pattern)
+    if (req.method === "GET" && url.pathname === "/create-resume") {
+        const applicationId = url.searchParams.get("applicationId");
+        if (!applicationId) {
+            res.writeHead(400, { "Content-Type": "application/json" });
+            res.end(JSON.stringify({ error: "Missing applicationId query parameter." }));
+            return;
+        }
 
-        req.on("data", (chunk) => {
-            body += chunk.toString();
-        });
-
-        req.on("end", async () => {
-            try {
-                const { applicationId } = JSON.parse(body);
-
-                if (!applicationId) {
-                    res.writeHead(400, { "Content-Type": "application/json" });
-                    res.end(JSON.stringify({ error: "Missing applicationId in request body." }));
-                    return;
-                }
-
-                console.log(`Creating resume for job application ID: ${applicationId}`);
-                const newResume = await createResumeFromApplication(applicationId);
-                res.writeHead(200, { "Content-Type": "application/json" });
-                res.end(JSON.stringify({ resumeId: newResume }));
-            } catch (error) {
-                console.error("❌ Error:", error);
-                res.writeHead(500, { "Content-Type": "application/json" });
-                res.end(JSON.stringify({ error: (error as Error).message }));
-            }
-        });
+        try {
+            console.log(`Creating resume for job application ID: ${applicationId}`);
+            const newResume = await createResumeFromApplication(applicationId);
+            res.writeHead(200, { "Content-Type": "application/json" });
+            res.end(JSON.stringify({ resumeId: newResume }));
+        } catch (error) {
+            console.error("❌ Error:", error);
+            res.writeHead(500, { "Content-Type": "application/json" });
+            res.end(JSON.stringify({ error: (error as Error).message }));
+        }
         return;
     }
 
-    // Handle 404 for other requests
+    // Handle 404 for all other routes
     res.writeHead(404, { "Content-Type": "text/plain" });
     res.end("Not Found");
 });
