@@ -45,22 +45,36 @@ async function getLatestBaseResume() {
 }
 
 /**
- * Creates a new Resume entry in Notion.
+ * Splits a string into chunks of 2000 characters or less for Notion rich_text compliance.
  */
+function splitTextIntoChunks(text: string, chunkSize: number = 2000) {
+  const chunks = [];
+  for (let i = 0; i < text.length; i += chunkSize) {
+      chunks.push(text.substring(i, i + chunkSize));
+  }
+  return chunks.map(chunk => ({ text: { content: chunk } }));
+}
+
+/**
+* Creates a new Resume entry in Notion with chunked Markdown.
+*/
 async function createResume(baseResume: any, applicationId: string) {
   const markdownContent = baseResume.properties["Markdown"].rich_text.map((t: any) => t.plain_text).join("");
+
+  // Split Markdown into multiple rich_text blocks
+  const markdownChunks = splitTextIntoChunks(markdownContent);
 
   const requestBody = {
       parent: { database_id: RESUMES_DB_ID },
       properties: {
           Name: { title: [{ text: { content: "Resume for Application" } }] },
-          "Markdown": { rich_text: [{ text: { content: markdownContent } }] },
+          "Markdown": { rich_text: markdownChunks },
           "Base Resume": { checkbox: false },
           "Created Date": { date: { start: new Date().toISOString() } },
       },
   };
 
-  console.log("🔍 Creating Notion Resume with payload:", JSON.stringify(requestBody, null, 2));
+  console.log("🔍 Creating Notion Resume with chunked payload:", JSON.stringify(requestBody, null, 2));
 
   const response = await fetch(`https://api.notion.com/v1/pages`, {
       method: "POST",
@@ -77,6 +91,7 @@ async function createResume(baseResume: any, applicationId: string) {
 
   return data;
 }
+
 
 
 /**
