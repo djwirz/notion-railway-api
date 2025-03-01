@@ -3,7 +3,7 @@ const RESUMES_DB_ID = process.env.NOTION_RESUMES_DB_ID;
 const JOB_APPLICATIONS_DB_ID = process.env.NOTION_JOB_APPLICATIONS_DB_ID;
 
 if (!NOTION_API_KEY || !RESUMES_DB_ID || !JOB_APPLICATIONS_DB_ID) {
-    throw new Error("❌ Missing required environment variables (NOTION_API_KEY, NOTION_RESUMES_DB_ID, NOTION_JOB_APPLICATIONS_DB_ID).");
+    throw new Error("❌ Missing required environment variables (NOTION_API_KEY, RESUMES_DB_ID, JOB_APPLICATIONS_DB_ID).");
 }
 
 const NOTION_HEADERS = {
@@ -44,20 +44,18 @@ async function getLatestBaseResume() {
  * Splits a string into chunks of 2000 characters or less for Notion rich_text compliance.
  */
 function splitTextIntoChunks(text: string, chunkSize: number = 2000) {
-  const chunks = [];
-  for (let i = 0; i < text.length; i += chunkSize) {
-      chunks.push(text.substring(i, i + chunkSize));
-  }
-  return chunks.map(chunk => ({ text: { content: chunk } }));
+    const chunks = [];
+    for (let i = 0; i < text.length; i += chunkSize) {
+        chunks.push(text.substring(i, i + chunkSize));
+    }
+    return chunks.map(chunk => ({ text: { content: chunk } }));
 }
 
 /**
-* Creates a new Resume entry in Notion with chunked Markdown.
-*/
+ * Creates a new Resume entry in Notion with chunked Markdown.
+ */
 async function createResume(baseResume: any, applicationId: string) {
   const markdownContent = baseResume.properties["Markdown"].rich_text.map((t: any) => t.plain_text).join("");
-
-  // Split Markdown into multiple rich_text blocks
   const markdownChunks = splitTextIntoChunks(markdownContent);
 
   const requestBody = {
@@ -66,6 +64,7 @@ async function createResume(baseResume: any, applicationId: string) {
           "Markdown": { rich_text: markdownChunks },
           "Base Resume": { checkbox: false },
           "Created Date": { date: { start: new Date().toISOString() } },
+          "Job Application": { relation: [{ id: applicationId }] }, // 🔗 Link Resume to Job Application
       },
   };
 
@@ -88,11 +87,12 @@ async function createResume(baseResume: any, applicationId: string) {
 }
 
 
-
 /**
  * Links the newly created Resume to the Job Application.
  */
 async function linkResumeToJobApplication(applicationId: string, resumeId: string) {
+    console.log(`🔗 Linking resume ${resumeId} to job application ${applicationId}`);
+
     const response = await fetch(`https://api.notion.com/v1/pages/${applicationId}`, {
         method: "PATCH",
         headers: NOTION_HEADERS,
@@ -114,5 +114,8 @@ async function linkResumeToJobApplication(applicationId: string, resumeId: strin
 export async function createResumeFromApplication(applicationId: string) {
     const baseResume = await getLatestBaseResume();
     const newResume = await createResume(baseResume, applicationId);
+
     await linkResumeToJobApplication(applicationId, newResume.id);
+
+    return newResume.id;
 }
