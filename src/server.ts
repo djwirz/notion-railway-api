@@ -1,9 +1,6 @@
 import { createServer } from "http";
-import dotenv from "dotenv";
-import { convertMarkdownToPDF } from "../src/services/pdfService";
-import { uploadToCloudflareR2 } from "../src/services/cloudflareR2Client";
-
-dotenv.config();
+import { convertMarkdownToPDF } from "./services/pdfService";
+import { uploadToCloudflareR2 } from "./services/cloudflareR2Client";
 
 const PORT = process.env.PORT || 3000;
 const NOTION_API_KEY = process.env.NOTION_API_KEY;
